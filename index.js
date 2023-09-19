@@ -1,0 +1,655 @@
+import * as THREE from "three";
+import { ColorManagement } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+// Fonction pour créer une sphère avec un matériau de base
+function createSphere(radius, segments, material) {
+  const geometry = new THREE.SphereGeometry(radius, segments, segments);
+  const mesh = new THREE.Mesh(geometry, material);
+  return mesh;
+}
+const objectToFollow = {};
+let isFollowing = false;
+function onClick(event) {
+  // Obtenez la position du clic de la souris en coordonnées normalisées
+  const mouse = new THREE.Vector2();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Créez un rayon depuis la caméra à la position du clic
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  const proximityThreshold = 0.1; // Ajustez selon vos besoins
+  // Obtenez la liste des objets intersectés par le rayon
+  const intersects = raycaster.intersectObjects(scene.children, true);
+
+  // Parcourez les objets intersectés pour vérifier s'ils sont des orbites
+  for (const intersect of intersects) {
+    if (intersect.object.isOrbit ) {
+      // C'est une orbite, affichez un message dans la console
+      console.log("Clic sur une orbite !");
+      console.log(intersect.object);
+      isFollowing = true;
+      objectToFollow.object = intersect.object;
+      break; // Sortez de la boucle car vous avez trouvé une orbite
+    }
+  }
+}
+
+function createOrbit(radius) {
+  const orbitGeometry = new THREE.RingGeometry(radius, radius + 0.01, 180);
+  const orbitMaterial = new THREE.LineBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0,
+  });
+
+  const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
+
+  orbitLine.rotation.x = Math.PI / 2;
+
+  // Marquez l'objet comme une orbite
+  orbitLine.isOrbit = true;
+
+  return orbitLine;
+}
+
+//la scène, la caméra et le rendu
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+camera.position.z = 10;
+
+// Add OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
+// textureLoader
+const textureLoader = new THREE.TextureLoader();
+const sunTexture = textureLoader.load("textures/sun/sunmap.jpg");
+const backgroundTexture = textureLoader.load("textures/starmap_8k.jpeg");
+
+// Create materials with textures
+const backgroundMaterial = new THREE.MeshBasicMaterial({
+  map: backgroundTexture,
+  side: THREE.BackSide,
+});
+const sunMaterial = new THREE.MeshBasicMaterial({
+  map: sunTexture,
+});
+
+var solarSystem = new THREE.Object3D();
+scene.add(solarSystem);
+
+// Add sun
+const sun = createSphere(7, 32, sunMaterial);
+sun.scale.set(0.4, 0.4, 0.4);
+solarSystem.add(sun);
+
+// Activer les ombres pour le soleil
+sun.castShadow = true;
+
+// Add background
+const backgroundMesh = createSphere(500, 32, backgroundMaterial);
+scene.add(backgroundMesh);
+
+const sunLight = new THREE.PointLight(0xffffff, 0);
+sunLight.position.set(0, 0, 0);
+sunLight.castShadow = true;
+sunLight.intensity = 2000;
+scene.add(sunLight);
+
+// Créez et ajoutez les planètes
+const planetData = {
+  moon: {
+    radius: 0.1,
+    rotation: 0.05,
+    distance: 0.5,
+    texture: "textures/moon/moonmap1k.jpg",
+  },
+  mercury: {
+    radius: 0.25,
+    rotation: 0.03,
+    distance: 1,
+    texture: "textures/mercury/mercury.jpg",
+  },
+  venus: {
+    radius: 0.5,
+    rotation: 0.02,
+    distance: 2,
+    texture: "textures/venus/venus.jpeg",
+  },
+  earth: {
+    radius: 1,
+    rotation: 0.01,
+    distance: 3,
+    texture: "textures/earth/earthmap1k.jpg",
+  },
+  mars: {
+    radius: 0.3,
+    rotation: 0.009,
+    distance: 4,
+    texture: "textures/mars/mars.jpg",
+  },
+  jupiter: {
+    radius: 11,
+    rotation: 0.008,
+    distance: 5,
+    texture: "textures/jupiter/jupiter.jpeg",
+  },
+  saturn: {
+    radius: 9.5,
+    rotation: 0.007,
+    distance: 6,
+    texture: "textures/saturn/saturn.jpeg",
+  },
+  uranus: {
+    radius: 4,
+    rotation: 0.006,
+    distance: 7,
+    texture: "textures/uranus/uranus.jpeg",
+  },
+  neptune: {
+    radius: 3.964,
+    rotation: 0.005,
+    distance: 8,
+    texture: "textures/neptune/neptune.jpg",
+  },
+  pluto: {
+    radius: 2,
+    rotation: 0.004,
+    distance: 9,
+    texture: "textures/pluto/pluto.jpeg",
+  },
+};
+
+//ajouter la lune
+const moonMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/moon/moonmap1k.jpg"),
+});
+const moon = createSphere(planetData.moon.radius, 32, moonMaterial);
+moon.position.set(2, 0, 0);
+moon.scale.set(0.2, 0.2, 0.2);
+solarSystem.add(moon);
+
+//ajouter mecure
+const mercuryMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/mercury/mercury.jpg"),
+});
+const mercury = createSphere(0.25, 32, mercuryMaterial);
+mercury.position.set(1, 0, 0);
+mercury.scale.set(0.2, 0.2, 0.2);
+solarSystem.add(mercury);
+
+// Création de la planète Terre avec MeshPhongMaterial
+const earthMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load("textures/earth/earthmap1k.jpg"),
+});
+const earth = createSphere(planetData.earth.radius, 32, earthMaterial);
+earth.position.set(20, 0, 0);
+earth.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(earth);
+
+// creation de la planete venus
+const venusMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/venus/venus.jpeg"),
+});
+const venus = createSphere(planetData.venus.radius, 32, venusMaterial);
+venus.position.set(10, 0, 0);
+venus.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(venus);
+
+// creation de la planete mars
+const marsMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/mars/mars.jpg"),
+});
+const mars = createSphere(planetData.mars.radius, 32, marsMaterial);
+mars.position.set(30, 0, 0);
+mars.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(mars);
+
+// creation de la planete jupiter
+const jupiterMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/jupiter/jupiter.jpeg"),
+});
+const jupiter = createSphere(planetData.jupiter.radius, 32, jupiterMaterial);
+jupiter.position.set(40, 0, 0);
+jupiter.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(jupiter);
+
+// creation de la planete saturne
+const saturnMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/saturn/saturn.jpeg"),
+});
+const saturn = createSphere(planetData.saturn.radius, 32, saturnMaterial);
+saturn.position.set(50, 0, 0);
+saturn.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(saturn);
+
+//creation de l'anneau de saturne
+const saturnRingMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/saturn/saturn_ring.png"),
+  side: THREE.DoubleSide,
+});
+const saturnRing = new THREE.Mesh(
+  new THREE.RingGeometry(
+    planetData.saturn.radius + 1,
+    planetData.saturn.radius + 8,
+    32
+  ),
+  saturnRingMaterial
+);
+saturnRing.rotation.x = Math.PI / 2;
+saturn.add(saturnRing);
+
+// creation de la planete uranus
+const uranusMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/uranus/uranus.jpeg"),
+});
+const uranus = createSphere(planetData.uranus.radius, 32, uranusMaterial);
+uranus.position.set(60, 0, 0);
+uranus.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(uranus);
+
+//creation de la planete neptune
+const neptuneMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/neptune/neptune.jpg"),
+});
+const neptune = createSphere(planetData.neptune.radius, 32, neptuneMaterial);
+neptune.position.set(70, 0, 0);
+neptune.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(neptune);
+
+// creation de la planete pluto
+const plutoMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load("textures/pluto/pluto.jpeg"),
+});
+const pluto = createSphere(planetData.pluto.radius, 32, plutoMaterial);
+pluto.position.set(80, 0, 0);
+pluto.scale.set(0.5, 0.5, 0.5);
+solarSystem.add(pluto);
+
+const earthOrbitRadius = 7+5;
+const moonOrbitRadius = 1+5;
+const mercuryOrbitRadius = 2.5+5;
+const venusOrbitRadius = 5+5;
+const marsOrbitRadius = 11+5;
+const jupiterOrbitRadius = 37.5+5;
+const saturnOrbitRadius = 70+5;
+const uranusOrbitRadius = 143+5;
+const neptuneOrbitRadius = 225+5;
+const plutoOrbitRadius = 300+5;
+// Créez des géométries de cercle pour les orbites (par exemple, pour la Terre)
+
+const moonOrbitGeometry = new THREE.RingGeometry(
+  moonOrbitRadius,
+  moonOrbitRadius,
+  180
+);
+const orbitMaterial = new THREE.LineBasicMaterial({
+  color: 0xffffff,
+  transparent: true,
+  opacity: 0,
+});
+const moonOrbitLine = new THREE.Line(moonOrbitGeometry, orbitMaterial);
+moonOrbitLine.rotation.x = Math.PI / 2;
+// Ajoutez les lignes d'orbite à la scène
+
+scene.add(moonOrbitLine);
+const earthOrbitLine = createOrbit(earthOrbitRadius);
+scene.add(earthOrbitLine);
+const mercuryOrbitLine = createOrbit(mercuryOrbitRadius);
+scene.add(mercuryOrbitLine);
+const venusOrbitLine = createOrbit(venusOrbitRadius);
+scene.add(venusOrbitLine);
+const marsOrbitLine = createOrbit(marsOrbitRadius);
+scene.add(marsOrbitLine);
+const jupiterOrbitLine = createOrbit(jupiterOrbitRadius);
+scene.add(jupiterOrbitLine);
+const saturnOrbitLine = createOrbit(saturnOrbitRadius);
+scene.add(saturnOrbitLine);
+const uranusOrbitLine = createOrbit(uranusOrbitRadius);
+scene.add(uranusOrbitLine);
+const neptuneOrbitLine = createOrbit(neptuneOrbitRadius);
+scene.add(neptuneOrbitLine);
+const plutoOrbitLine = createOrbit(plutoOrbitRadius);
+scene.add(plutoOrbitLine);
+
+const saturnRingInclination = 69; //27deg Inclinaison en degrés
+
+// Convertissez l'inclinaison en radians
+const inclinationRadians = (saturnRingInclination / 180) * Math.PI;
+
+// Appliquez la rotation aux anneaux de Saturne (assurez-vous que l'objet des anneaux est un enfant de l'objet Saturne)
+saturnRing.rotation.x = inclinationRadians;
+
+// Durée d'une année en millisecondes (10 secondes dans la simulation)
+const yearDuration = 10000;
+
+// Durée relative pour Mercure (en millisecondes) par exemple, 1/5 de la durée de l'année
+const mercuryYearDuration = yearDuration / 5;
+
+// Durée relative pour Vénus (en millisecondes) par exemple, 1/3 de la durée de l'année
+const venusYearDuration = yearDuration / 3;
+
+// Durée relative pour la Lune (en millisecondes) par exemple, 1/10 de la durée de l'année
+const moonYearDuration = yearDuration / 10;
+
+// Durée relative pour Mars (en millisecondes) par exemple, 2/5 de la durée de l'année
+const marsYearDuration = (2 * yearDuration) / 5;
+
+// Durée relative pour Jupiter (en millisecondes) par exemple, 1/2 de la durée de l'année
+const jupiterYearDuration = yearDuration / 2;
+
+// Durée relative pour Saturne (en millisecondes) par exemple, 3/5 de la durée de l'année
+const saturnYearDuration = (3 * yearDuration) / 5;
+
+// Durée relative pour Uranus (en millisecondes) par exemple, 7/10 de la durée de l'année
+const uranusYearDuration = (7 * yearDuration) / 10;
+
+// Durée relative pour Neptune (en millisecondes) par exemple, 4/5 de la durée de l'année
+const neptuneYearDuration = (4 * yearDuration) / 5;
+
+// Durée relative pour Pluton (en millisecondes) par exemple, 9/10 de la durée de l'année
+const plutoYearDuration = (9 * yearDuration) / 10;
+var keypressed = false;
+document.addEventListener("keydown", function (event) {
+  if (event.key === "o") {
+    keypressed = true;
+    
+  }
+});
+
+document.addEventListener("keyup", function (event) {
+  if (event.key === "o") {
+    keypressed = false;
+    isFollowing = false;
+  }
+});
+
+renderer.domElement.addEventListener("click", onClick);
+
+
+function render() {
+  const currentTime = Date.now();
+  
+  // const moonOrbitRadius = 1;
+  // const mercuryOrbitRadius = 2.5;
+  // const venusOrbitRadius = 5;
+  // const marsOrbitRadius = 11;marsOrbitRadius
+  // const jupiterOrbitRadius = 37.5;
+  // const saturnOrbitRadius = 70;
+  // const uranusOrbitRadius = 143;
+  // const neptuneOrbitRadius = 225;
+  // const plutoOrbitRadius = 300;
+  // faut check ring geometry dans l'objet
+  if (keypressed && isFollowing && objectToFollow) {
+    const cameraRotationSpeed = ((currentTime % yearDuration/2) / yearDuration/2) * 2 * Math.PI;
+    if (objectToFollow.object.geometry.parameters.innerRadius == earthOrbitRadius) {
+      // Positionnez la caméra de manière à ce qu'elle suive la Terre
+      const targetPosition = new THREE.Vector3(
+        earth.position.x +moonOrbitRadius * Math.cos(cameraRotationSpeed)+ 1,
+        earth.position.y +Math.cos(cameraRotationSpeed)*2,
+        earth.position.z +moonOrbitRadius * Math.sin(cameraRotationSpeed) +1
+      );
+      // Définissez la position de la caméra
+      camera.position.copy(targetPosition);
+      // Utilisez lookAt pour que la caméra regarde la Terre
+      camera.lookAt(earth.position);
+      // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+      controls.target.copy(earth.position);
+      controls.update();
+    }
+    if (objectToFollow.object.geometry.parameters.innerRadius == mercuryOrbitRadius) {
+      // Positionnez la caméra de manière à ce qu'elle suive la Lune
+      const targetPosition = new THREE.Vector3(
+        mercury.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1,
+        mercury.position.y +Math.cos(cameraRotationSpeed)*2,
+        mercury.position.z + 1 * Math.sin(cameraRotationSpeed) +1
+        );
+        // Définissez la position de la caméra
+        camera.position.copy(targetPosition);
+        // Utilisez lookAt pour que la caméra regarde la Lune
+        camera.lookAt(mercury.position);
+        // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+        controls.target.copy(mercury.position);
+        controls.update();
+
+    }
+    if (objectToFollow.object.geometry.parameters.innerRadius == venusOrbitRadius) {
+        const targetPosition = new THREE.Vector3(
+            venus.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1,
+            venus.position.y +Math.cos(cameraRotationSpeed)*2,
+            venus.position.z + 1 * Math.sin(cameraRotationSpeed) +1
+            );
+            // Définissez la position de la caméra
+            camera.position.copy(targetPosition);
+            // Utilisez lookAt pour que la caméra regarde la Lune
+            camera.lookAt(venus.position);
+            // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+            controls.target.copy(venus.position);
+            controls.update();
+        }
+        if (objectToFollow.object.geometry.parameters.innerRadius == marsOrbitRadius) {
+            const targetPosition = new THREE.Vector3(
+                mars.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1,
+                mars.position.y +Math.cos(cameraRotationSpeed)*2,
+                mars.position.z + 1 * Math.sin(cameraRotationSpeed) +1
+                );
+                // Définissez la position de la caméra
+                camera.position.copy(targetPosition);
+                // Utilisez lookAt pour que la caméra regarde la Lune
+                camera.lookAt(mars.position);
+                // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                controls.target.copy(mars.position);
+                controls.update();
+            }
+
+            if (objectToFollow.object.geometry.parameters.innerRadius == jupiterOrbitRadius) {
+                const targetPosition = new THREE.Vector3(
+                    jupiter.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1+60/2,
+                    jupiter.position.y +Math.cos(cameraRotationSpeed)*2,
+                    jupiter.position.z + 1 * Math.sin(cameraRotationSpeed) +1+60/2
+                    );
+                    // Définissez la position de la caméra
+                    camera.position.copy(targetPosition);
+                    // Utilisez lookAt pour que la caméra regarde la Lune
+                    camera.lookAt(jupiter.position);
+                    // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                    controls.target.copy(jupiter.position);
+                    controls.update();
+                }
+                if (objectToFollow.object.geometry.parameters.innerRadius == saturnOrbitRadius) {
+                    const targetPosition = new THREE.Vector3(
+                        saturn.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1+60/2,
+                        saturn.position.y +Math.cos(cameraRotationSpeed)*2,
+                        saturn.position.z + 1 * Math.sin(cameraRotationSpeed) +1+60/2
+                        );
+                        // Définissez la position de la caméra
+                        camera.position.copy(targetPosition);
+                        // Utilisez lookAt pour que la caméra regarde la Lune
+                        camera.lookAt(saturn.position);
+                        // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                        controls.target.copy(saturn.position);
+                        controls.update();
+                    }
+                    if (objectToFollow.object.geometry.parameters.innerRadius == uranusOrbitRadius) {
+                        const targetPosition = new THREE.Vector3(
+                            uranus.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1+70/2,
+                            uranus.position.y +Math.cos(cameraRotationSpeed)*2,
+                            uranus.position.z + 1 * Math.sin(cameraRotationSpeed) +1+70/2
+                            );
+                            // Définissez la position de la caméra
+                            camera.position.copy(targetPosition);
+                            // Utilisez lookAt pour que la caméra regarde la Lune
+                            camera.lookAt(uranus.position);
+                            // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                            controls.target.copy(uranus.position);
+                            controls.update();
+                        }
+                        if (objectToFollow.object.geometry.parameters.innerRadius == neptuneOrbitRadius) {
+                            const targetPosition = new THREE.Vector3(
+                                neptune.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1+70/2,
+                                neptune.position.y +Math.cos(cameraRotationSpeed)*2,
+                                neptune.position.z + 1 * Math.sin(cameraRotationSpeed) +1+70/2
+                                );
+                                // Définissez la position de la caméra
+                                camera.position.copy(targetPosition);
+                                // Utilisez lookAt pour que la caméra regarde la Lune
+                                camera.lookAt(neptune.position);
+                                // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                                controls.target.copy(neptune.position);
+                                controls.update();
+                            }
+                            if (objectToFollow.object.geometry.parameters.innerRadius == plutoOrbitRadius) {
+                                const targetPosition = new THREE.Vector3(
+                                    pluto.position.x + 1 * Math.cos(cameraRotationSpeed)+ 1,
+                                    pluto.position.y +Math.cos(cameraRotationSpeed)*2,
+                                    pluto.position.z + 1 * Math.sin(cameraRotationSpeed) +1
+                                    );
+                                    // Définissez la position de la caméra
+                                    camera.position.copy(targetPosition);
+                                    // Utilisez lookAt pour que la caméra regarde la Lune
+                                    camera.lookAt(pluto.position);
+                                    // Mettez à jour OrbitControls avec la nouvelle position et orientation de la caméra
+                                    controls.target.copy(pluto.position);
+                                    controls.update();
+                                }
+
+
+
+  }
+  // if (keypressed && isFollowing && objectToFollow) {
+  //     // Calculez la position de la caméra en fonction de la position de l'objet à suivre
+  //     const objectToFollowPosition = objectToFollow.object.position;
+  //     console.log(objectToFollowPosition)
+  //     camera.position.x = objectToFollowPosition.x;
+  //     camera.position.y = objectToFollowPosition.y;
+  //     camera.position.z = objectToFollowPosition.z + 10;
+  // }
+
+  // Faites tourner la Terre autour du soleil avec une année simulée de 10 secondes
+  earth.rotation.y =
+    ((currentTime % yearDuration) / yearDuration) * 2 * Math.PI;
+
+  // Faites tourner la Lune autour de la Terre avec la même échelle de temps
+  moon.rotation.y =
+    ((currentTime % moonYearDuration) / moonYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Mercure autour du soleil avec la même échelle de temps
+  mercury.rotation.y =
+    ((currentTime % mercuryYearDuration) / mercuryYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Venus autour du soleil avec la même échelle de temps
+  venus.rotation.y =
+    ((currentTime % venusYearDuration) / venusYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Mars autour du soleil avec la même échelle de temps
+  mars.rotation.y =
+    ((currentTime % marsYearDuration) / marsYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Jupiter autour du soleil avec la même échelle de temps
+  jupiter.rotation.y =
+    ((currentTime % jupiterYearDuration) / jupiterYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Saturne autour du soleil avec la même échelle de temps
+  saturn.rotation.y =
+    ((currentTime % saturnYearDuration) / saturnYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Uranus autour du soleil avec la même échelle de temps
+  uranus.rotation.y =
+    ((currentTime % uranusYearDuration) / uranusYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Neptune autour du soleil avec la même échelle de temps
+  neptune.rotation.y =
+    ((currentTime % neptuneYearDuration) / neptuneYearDuration) * 2 * Math.PI;
+
+  // Faites tourner Pluton autour du soleil avec la même échelle de temps
+  pluto.rotation.y =
+    ((currentTime % plutoYearDuration) / plutoYearDuration) * 2 * Math.PI;
+
+  // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
+  earth.position.x = earthOrbitRadius * Math.cos(earth.rotation.y);
+  earth.position.z = earthOrbitRadius * Math.sin(earth.rotation.y);
+
+  moon.position.x =
+    earth.position.x + moonOrbitRadius * Math.cos(moon.rotation.y);
+  moon.position.z =
+    earth.position.z + moonOrbitRadius * Math.sin(moon.rotation.y);
+
+  mercury.position.x = mercuryOrbitRadius * Math.cos(-mercury.rotation.y);
+  mercury.position.z = mercuryOrbitRadius * Math.sin(-mercury.rotation.y);
+
+  venus.position.x = venusOrbitRadius * Math.cos(-venus.rotation.y);
+  venus.position.z = venusOrbitRadius * Math.sin(-venus.rotation.y);
+
+  mars.position.x = marsOrbitRadius * Math.cos(mars.rotation.y);
+  mars.position.z = marsOrbitRadius * Math.sin(mars.rotation.y);
+
+  jupiter.position.x = jupiterOrbitRadius * Math.cos(jupiter.rotation.y);
+  jupiter.position.z = jupiterOrbitRadius * Math.sin(jupiter.rotation.y);
+
+  saturn.position.x = saturnOrbitRadius * Math.cos(saturn.rotation.y);
+  saturn.position.z = saturnOrbitRadius * Math.sin(saturn.rotation.y);
+
+  uranus.position.x = uranusOrbitRadius * Math.cos(uranus.rotation.y);
+  uranus.position.z = uranusOrbitRadius * Math.sin(uranus.rotation.y);
+
+  neptune.position.x = neptuneOrbitRadius * Math.cos(neptune.rotation.y);
+  neptune.position.z = neptuneOrbitRadius * Math.sin(neptune.rotation.y);
+
+  pluto.position.x = plutoOrbitRadius * Math.cos(pluto.rotation.y);
+  pluto.position.z = plutoOrbitRadius * Math.sin(pluto.rotation.y);
+
+  moonOrbitLine.position.x = earth.position.x;
+  moonOrbitLine.position.z = earth.position.z;
+
+  if (keypressed == true) {
+    earthOrbitLine.material.opacity = 1;
+    moonOrbitLine.material.opacity = 1; // Orbite visible
+    marsOrbitLine.material.opacity = 1;
+    mercuryOrbitLine.material.opacity = 1;
+    venusOrbitLine.material.opacity = 1;
+    jupiterOrbitLine.material.opacity = 1;
+    saturnOrbitLine.material.opacity = 1;
+    uranusOrbitLine.material.opacity = 1;
+    neptuneOrbitLine.material.opacity = 1;
+    plutoOrbitLine.material.opacity = 1;
+  } else {
+    earthOrbitLine.material.opacity = 0;
+    moonOrbitLine.material.opacity = 0; // Orbite invisible
+    marsOrbitLine.material.opacity = 0;
+    mercuryOrbitLine.material.opacity = 0;
+    venusOrbitLine.material.opacity = 0;
+    jupiterOrbitLine.material.opacity = 0;
+    saturnOrbitLine.material.opacity = 0;
+    uranusOrbitLine.material.opacity = 0;
+    neptuneOrbitLine.material.opacity = 0;
+    plutoOrbitLine.material.opacity = 0;
+  }
+
+  sun.rotation.y += 0.01;
+
+  // Mettez à jour OrbitControls
+  controls.update();
+
+  //ajouter des ombres
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  requestAnimationFrame(render);
+  renderer.render(scene, camera);
+}
+
+// Appelez la fonction render pour commencer l'animation
+render();

@@ -21,7 +21,7 @@ fichier.write("DATA ascii\n")
 for i in range(0, 10000):
     #random number between 17 and 22
     r = random.uniform(17.5, 23)
-    height = random.uniform(0, 0.5)
+    height = random.uniform(-0.5, 0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
     #calculate x and y
@@ -30,35 +30,62 @@ for i in range(0, 10000):
     #write in file
     fichier.write(str(x) + " "+ str(height) +" "  + str(y) + " \n")
 
+for i in range(0, 10000):
+    # Choisissez une hauteur aléatoire entre 20 et 23
+    height = random.uniform(-1,1)
+    # Choisissez un angle aléatoire entre 0 et 360 degrés
+    angle = random.uniform(0, 360)
+    # Calculez les coordonnées x et z en fonction de la hauteur et de l'angle
+    x = height * math.cos(-math.radians(angle))
+    z = height * math.sin(-math.radians(angle))
+    # Écrivez les coordonnées dans le fichier
+    fichier.write(str(x) + " " + str(height) + " " + str(z) + "\n")
+
 for i in range(0, 600):
     #random number between 17 and 22
     r = random.uniform(23,24)
+    height = random.uniform(-0.5,0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
     #calculate x and y
     x = r * math.cos(angle)
     y = r * math.sin(angle)
     #write in file
-    fichier.write(str(x) + " 0 "  + str(y) + " \n")
+    fichier.write(str(x) + " " + str(height) + " "  + str(y) + " \n")
 
 for i in range(0, 500):
     #random number between 17 and 22
     r = random.uniform(24,26)
     #random angle between 0 and 360
+    height = random.uniform(-0.5,0.5)
     angle = random.uniform(0, 360)
     #calculate x and y
     x = r * math.cos(angle)
     y = r * math.sin(angle)
     #write in file
-    fichier.write(str(x) + " 0 "  + str(y) + " \n")
+    fichier.write(str(x) + " " + str(height) + " "  + str(y) + " \n")
 
 for i in range(0, 500):
     #random number between 17 and 22
     r = random.uniform(17,17.5)
+    height = random.uniform(-0.5,0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
     #calculate x and y
     x = r * math.cos(angle)
     y = r * math.sin(angle)
     #write in file
-    fichier.write(str(x) + " 0 "  + str(y) + " \n")
+    fichier.write(str(x) + " " + str(height) + " "  + str(y) + " \n")
+
+#imperfections
+for i in range(0, 500):
+    #random number between 17 and 22
+    r = random.uniform(16, 27)
+    height = random.uniform(-1.5, 1.5)
+    #random angle between 0 and 360
+    angle = random.uniform(0, 360)
+    #calculate x and y
+    x = r * math.cos(angle)
+    y = r * math.sin(angle)
+    #write in file
+    fichier.write(str(x) + " "+ str(height) +" "  + str(y) + " \n")

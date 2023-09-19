@@ -6,8 +6,8 @@ export const yearDuration = 10000;
 // Créez et ajoutez les planètes
 export const planetData = {
   moon: {
-    radius: 0.1,
-    orbitRadius: 1 + 5,
+    radius: 0.2,
+    orbitRadius: 1,
     texture: "textures/moon/moonmap1k.jpg",
   },
   mercury: {

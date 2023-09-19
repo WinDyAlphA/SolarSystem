@@ -96,6 +96,14 @@ controls.dampingFactor = 0.05;
 
 // textureLoader
 const textureLoader = new THREE.TextureLoader();
+const video = document.createElement('video');
+video.src = 'textures/sun/sunvid.mov';
+video.loop = true; // La vidéo boucle en continu
+video.muted = true; // Activez le mode muet pour éviter la lecture du son
+video.play(); // Commencez la lecture de la vidéo
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter; // Réglez le filtrage pour une meilleure qualité
+videoTexture.magFilter = THREE.LinearFilter;
 const sunTexture = textureLoader.load("textures/sun/sunmap.jpg");
 const backgroundTexture = textureLoader.load("textures/starmap_8k.jpeg");
 
@@ -105,7 +113,7 @@ const backgroundMaterial = new THREE.MeshBasicMaterial({
   side: THREE.BackSide,
 });
 const sunMaterial = new THREE.MeshBasicMaterial({
-  map: sunTexture,
+  map: videoTexture,
 });
 
 var solarSystem = new THREE.Object3D();

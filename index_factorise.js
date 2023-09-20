@@ -159,5 +159,7 @@ function render() {
     renderer.render(scene, camera);
 }
 
+
+
 // Démarrer l'animation
 render();

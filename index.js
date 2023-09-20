@@ -145,6 +145,7 @@ const moonMaterial = new THREE.MeshPhongMaterial({
 const moon = createSphere(env.planetData.moon.radius, 32, moonMaterial);
 moon.position.set(2, 0, 0);
 moon.scale.set(0.2, 0.2, 0.2);
+
 solarSystem.add(moon);
 
 //ajouter mecure
@@ -220,7 +221,7 @@ saturn.add(saturnRing);
 
 // creation de la planete uranus
 const uranusMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load("textures/uranus/uranus.jpeg"),
+  map: textureLoader.load(env.planetData.uranus.texture),
 });
 const uranus = createSphere(env.planetData.uranus.radius, 32, uranusMaterial);
 uranus.position.set(60, 0, 0);
@@ -238,7 +239,7 @@ solarSystem.add(neptune);
 
 // creation de la planete pluto
 const plutoMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load("textures/pluto/pluto.jpeg"),
+  map: textureLoader.load(env.planetData.pluto.texture),
 });
 const pluto = createSphere(env.planetData.pluto.radius, 32, plutoMaterial);
 pluto.position.set(80, 0, 0);

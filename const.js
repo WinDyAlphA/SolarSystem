@@ -23,7 +23,7 @@ export const planetData = {
   earth: {
     radius: 1,
     orbitRadius: 7 + 5,
-    texture: "textures/earth/earthmap1k.jpg",
+    texture: "textures/earth/earth8k.jpeg",
   },
   mars: {
     radius: 0.3,

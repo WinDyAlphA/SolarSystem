@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { ColorManagement } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PCDLoader } from 'three/addons/loaders/PCDLoader.js';
+import { ObjetStellaire } from "./ObjetStellaire.js";
 
 import * as env from './const.js';
 // Fonction pour créer une sphère avec un matériau de base
@@ -10,11 +11,6 @@ function createSphere(radius, segments, material) {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.receiveShadow = true
   mesh.castShadow = true
-  return mesh;
-}
-function createSun(radius, segments, material) {
-  const geometry = new THREE.SphereGeometry(radius, segments, segments);
-  const mesh = new THREE.Mesh(geometry, material);
   return mesh;
 }
 const objectToFollow = {};
@@ -46,7 +42,7 @@ function onClick(event) {
 }
 
 function createOrbit(radius) {
-  const orbitGeometry = new THREE.RingGeometry(radius, radius + 0.01, 180);
+  const orbitGeometry = new THREE.RingGeometry(radius, radius + 0.1, 180);
   const orbitMaterial = new THREE.LineBasicMaterial({
     color: 0xffffff,
     transparent: true,
@@ -100,6 +96,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
+
+
+
 // textureLoader
 const textureLoader = new THREE.TextureLoader();
 const video = document.createElement('video');
@@ -125,10 +124,141 @@ const sunMaterial = new THREE.MeshBasicMaterial({
 var solarSystem = new THREE.Object3D();
 scene.add(solarSystem);
 
-// Add sun
-const sun = createSun(7, 32, sunMaterial);
-sun.scale.set(0.4, 0.4, 0.4);
-solarSystem.add(sun);
+const sun = new ObjetStellaire(env.planetData.sun.radius,
+  32,
+  sunMaterial,
+  0,
+  0,
+  )
+sun.addToScene(scene);
+
+
+
+
+
+
+const earthMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.earth.texture),
+  normalMap: textureLoader.load('textures/earth/8knm.jpg'),
+  specularMap: textureLoader.load('textures/earth/8kspm.jpg'),
+});
+const earth = new ObjetStellaire(env.planetData.earth.radius,
+  32,
+  earthMaterial,
+  env.planetData.earth.orbitRadius,
+  env.planetData.earth.eccentricity,
+  )
+earth.addToScene(scene);
+
+
+const mercuryMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.mercury.texture),
+});
+const mercury = new ObjetStellaire(env.planetData.mercury.radius,
+  32,
+  mercuryMaterial,
+  env.planetData.mercury.orbitRadius,
+  env.planetData.mercury.eccentricity,
+  true, 1/5, -1
+  )
+mercury.addToScene(scene);
+const venusMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.venus.texture),
+});
+const venus = new ObjetStellaire(env.planetData.venus.radius,
+  32,
+  venusMaterial,
+  env.planetData.venus.orbitRadius,
+  env.planetData.venus.eccentricity,
+  true, 1/3 , -1
+  )
+venus.addToScene(scene);
+
+const marsMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.mars.texture),
+});
+const mars = new ObjetStellaire(env.planetData.mars.radius,
+  32,
+  marsMaterial,
+  env.planetData.mars.orbitRadius,
+  env.planetData.mars.eccentricity,
+  true, 2/5
+  )
+mars.addToScene(scene);
+
+const jupiterMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.jupiter.texture)
+});
+const jupiter = new ObjetStellaire(env.planetData.jupiter.radius,
+  32,
+  jupiterMaterial,
+  env.planetData.jupiter.orbitRadius,
+  env.planetData.jupiter.eccentricity,true,
+  3/10
+  )
+jupiter.addToScene(scene);
+
+const saturnMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.saturn.texture)
+});
+const saturn = new ObjetStellaire(env.planetData.saturn.radius,
+  32,
+  saturnMaterial,
+  env.planetData.saturn.orbitRadius,
+  env.planetData.saturn.eccentricity,true,
+  true,
+  3/9
+  )
+saturn.addToScene(scene);
+
+const uranusMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.uranus.texture)
+});
+const uranus = new ObjetStellaire(env.planetData.uranus.radius,
+  32,
+  uranusMaterial,
+  env.planetData.uranus.orbitRadius,
+  env.planetData.uranus.eccentricity,true,
+  4/2
+  )
+uranus.addToScene(scene);
+
+const neptuneMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.neptune.texture)
+});
+const neptune = new ObjetStellaire(env.planetData.neptune.radius,
+  32,
+  neptuneMaterial,
+  env.planetData.neptune.orbitRadius,
+  env.planetData.neptune.eccentricity,true,
+  4/5
+  )
+neptune.addToScene(scene);
+
+
+const plutoMaterial = new THREE.MeshPhongMaterial({
+  // Utilisation de MeshPhongMaterial pour permettre les ombres
+  map: textureLoader.load(env.planetData.pluto.texture)
+});
+const pluto = new ObjetStellaire(env.planetData.pluto.radius,
+  32,
+  plutoMaterial,
+  env.planetData.pluto.orbitRadius,
+  env.planetData.pluto.eccentricity,true,
+  14/8
+  )
+pluto.addToScene(scene);
+
+
+
 
 
 
@@ -138,7 +268,6 @@ scene.add(backgroundMesh);
 
 const sunLight = new THREE.PointLight(env.sunLightColor, 0);
 sunLight.position.set(0, 0, 0);
-sunLight.castShadow = true;
 sunLight.intensity = env.sunLightIntensity;
 scene.add(sunLight);
 
@@ -153,61 +282,6 @@ moon.scale.set(0.2, 0.2, 0.2);
 
 solarSystem.add(moon);
 
-//ajouter mecure
-const mercuryMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.mercury.texture),
-});
-const mercury = createSphere(0.25, 32, mercuryMaterial);
-mercury.position.set(1, 0, 0);
-mercury.scale.set(0.2, 0.2, 0.2);
-solarSystem.add(mercury);
-
-// Création de la planète Terre avec MeshPhongMaterial
-const earthMaterial = new THREE.MeshPhongMaterial({
-  // Utilisation de MeshPhongMaterial pour permettre les ombres
-  map: textureLoader.load(env.planetData.earth.texture),
-});
-const earth = createSphere(env.planetData.earth.radius, 32, earthMaterial);
-earth.position.set(20, 0, 0);
-
-earth.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(earth);
-
-// creation de la planete venus
-const venusMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.venus.texture),
-});
-const venus = createSphere(env.planetData.venus.radius, 32, venusMaterial);
-venus.position.set(10, 0, 0);
-venus.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(venus);
-
-// creation de la planete mars
-const marsMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.mars.texture),
-});
-const mars = createSphere(env.planetData.mars.radius, 32, marsMaterial);
-mars.position.set(30, 0, 0);
-mars.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(mars);
-
-// creation de la planete jupiter
-const jupiterMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.jupiter.texture),
-});
-const jupiter = createSphere(env.planetData.jupiter.radius, 32, jupiterMaterial);
-jupiter.position.set(40, 0, 0);
-jupiter.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(jupiter);
-
-// creation de la planete saturne
-const saturnMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.saturn.texture),
-});
-const saturn = createSphere(env.planetData.saturn.radius, 32, saturnMaterial);
-saturn.position.set(50, 0, 0);
-saturn.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(saturn);
 
 //creation de l'anneau de saturne
 const saturnRingMaterial = new THREE.MeshPhongMaterial({
@@ -223,34 +297,7 @@ const saturnRing = new THREE.Mesh(
   saturnRingMaterial
 );
 saturnRing.rotation.x = Math.PI / 2;
-saturn.add(saturnRing);
-
-// creation de la planete uranus
-const uranusMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.uranus.texture),
-});
-const uranus = createSphere(env.planetData.uranus.radius, 32, uranusMaterial);
-uranus.position.set(60, 0, 0);
-uranus.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(uranus);
-
-//creation de la planete neptune
-const neptuneMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load("textures/neptune/neptune.jpg"),
-});
-const neptune = createSphere(env.planetData.neptune.radius, 32, neptuneMaterial);
-neptune.position.set(70, 0, 0);
-neptune.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(neptune);
-
-// creation de la planete pluto
-const plutoMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.pluto.texture),
-});
-const pluto = createSphere(env.planetData.pluto.radius, 32, plutoMaterial);
-pluto.position.set(80, 0, 0);
-pluto.scale.set(0.5, 0.5, 0.5);
-solarSystem.add(pluto);
+saturn.mesh.add(saturnRing);
 
 // Créez des géométries de cercle pour les orbites (par exemple, pour la Terre)
 
@@ -269,24 +316,6 @@ moonOrbitLine.rotation.x = Math.PI / 2;
 // Ajoutez les lignes d'orbite à la scène
 
 scene.add(moonOrbitLine);
-const earthOrbitLine = createOrbit(env.planetData.earth.orbitRadius);
-scene.add(earthOrbitLine);
-const mercuryOrbitLine = createOrbit(env.planetData.mercury.orbitRadius);
-scene.add(mercuryOrbitLine);
-const venusOrbitLine = createOrbit(env.planetData.venus.orbitRadius);
-scene.add(venusOrbitLine);
-const marsOrbitLine = createOrbit(env.planetData.mars.orbitRadius);
-scene.add(marsOrbitLine);
-const jupiterOrbitLine = createOrbit(env.planetData.jupiter.orbitRadius);
-scene.add(jupiterOrbitLine);
-const saturnOrbitLine = createOrbit(env.planetData.saturn.orbitRadius);
-scene.add(saturnOrbitLine);
-const uranusOrbitLine = createOrbit(env.planetData.uranus.orbitRadius);
-scene.add(uranusOrbitLine);
-const neptuneOrbitLine = createOrbit(env.planetData.neptune.orbitRadius);
-scene.add(neptuneOrbitLine);
-const plutoOrbitLine = createOrbit(env.planetData.pluto.orbitRadius);
-scene.add(plutoOrbitLine);
 
 const saturnRingInclination = 69; //27deg Inclinaison en degrés
 
@@ -302,29 +331,9 @@ const yearDuration = env.yearDuration;
 // Durée relative pour Mercure (en millisecondes) par exemple, 1/5 de la durée de l'année
 const mercuryYearDuration = yearDuration / 5;
 
-// Durée relative pour Vénus (en millisecondes) par exemple, 1/3 de la durée de l'année
-const venusYearDuration = yearDuration / 3;
-
 // Durée relative pour la Lune (en millisecondes) par exemple, 1/10 de la durée de l'année
 const moonYearDuration = yearDuration / 10;
 
-// Durée relative pour Mars (en millisecondes) par exemple, 2/5 de la durée de l'année
-const marsYearDuration = (2 * yearDuration) / 5;
-
-// Durée relative pour Jupiter (en millisecondes) par exemple, 1/2 de la durée de l'année
-const jupiterYearDuration = yearDuration / 2;
-
-// Durée relative pour Saturne (en millisecondes) par exemple, 3/5 de la durée de l'année
-const saturnYearDuration = (3 * yearDuration) / 5;
-
-// Durée relative pour Uranus (en millisecondes) par exemple, 7/10 de la durée de l'année
-const uranusYearDuration = (7 * yearDuration) / 10;
-
-// Durée relative pour Neptune (en millisecondes) par exemple, 4/5 de la durée de l'année
-const neptuneYearDuration = (4 * yearDuration) / 5;
-
-// Durée relative pour Pluton (en millisecondes) par exemple, 9/10 de la durée de l'année
-const plutoYearDuration = (9 * yearDuration) / 10;
 var keypressed = false;
 document.addEventListener("keydown", function (event) {
   if (event.key === "o") {
@@ -351,31 +360,31 @@ function render() {
 
     switch (objectToFollow.object.geometry.parameters.innerRadius) {
         case env.planetData.earth.orbitRadius:
-            targetObject = earth;
+            targetObject = earth.mesh;
             break;
         case env.planetData.mercury.orbitRadius:
-            targetObject = mercury;
+            targetObject = mercury.mesh;
             break;
         case env.planetData.venus.orbitRadius:
-            targetObject = venus;
+            targetObject = venus.mesh;
             break;
         case env.planetData.mars.orbitRadius:
-            targetObject = mars;
+            targetObject = mars.mesh;
             break;
         case env.planetData.jupiter.orbitRadius:
-            targetObject = jupiter;
+            targetObject = jupiter.mesh;
             break;
         case env.planetData.saturn.orbitRadius:
-            targetObject = saturn;
+            targetObject = saturn.mesh;
             break;
         case env.planetData.uranus.orbitRadius:
-            targetObject = uranus;
+            targetObject = uranus.mesh;
             break;
         case env.planetData.neptune.orbitRadius:
-            targetObject = neptune;
+            targetObject = neptune.mesh;
             break;
         case env.planetData.pluto.orbitRadius:
-            targetObject = pluto;
+            targetObject = pluto.mesh;
             break;
         default:
             // Définissez ici le comportement par défaut si le rayon interne n'est pas trouvé.
@@ -383,7 +392,7 @@ function render() {
     }
 
     if (targetObject) {
-        if (targetObject === earth || targetObject === mercury || targetObject === venus || targetObject === mars || targetObject === pluto ) {
+        if (targetObject === earth.mesh || targetObject === mercury.mesh || targetObject === venus.mesh || targetObject === mars.mesh || targetObject === pluto.mesh ) {
             const targetPosition = new THREE.Vector3(
                 targetObject.position.x + 1 * Math.cos(cameraRotationSpeed) + 1 ,
                 targetObject.position.y + Math.cos(cameraRotationSpeed) * 2,
@@ -395,6 +404,7 @@ function render() {
             controls.update();
             }
         else {
+          console.log(targetObject)
             const targetPosition = new THREE.Vector3(
                 targetObject.position.x + 1 * Math.cos(cameraRotationSpeed) + 1+ 30,
                 targetObject.position.y + Math.cos(cameraRotationSpeed) * 2,
@@ -419,108 +429,54 @@ function render() {
   //     camera.position.z = objectToFollowPosition.z + 10;
   // }
 
-  // Faites tourner la Terre autour du soleil avec une année simulée de 10 secondes
-  earth.rotation.y =
-    ((currentTime % yearDuration) / yearDuration) * 2 * Math.PI;
 
   // Faites tourner la Lune autour de la Terre avec la même échelle de temps
   moon.rotation.y =
     ((currentTime % moonYearDuration) / moonYearDuration) * 2 * Math.PI;
 
-  // Faites tourner Mercure autour du soleil avec la même échelle de temps
-  mercury.rotation.y =
-    ((currentTime % mercuryYearDuration) / mercuryYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Venus autour du soleil avec la même échelle de temps
-  venus.rotation.y =
-    ((currentTime % venusYearDuration) / venusYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Mars autour du soleil avec la même échelle de temps
-  mars.rotation.y =
-    ((currentTime % marsYearDuration) / marsYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Jupiter autour du soleil avec la même échelle de temps
-  jupiter.rotation.y =
-    ((currentTime % jupiterYearDuration) / jupiterYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Saturne autour du soleil avec la même échelle de temps
-  saturn.rotation.y =
-    ((currentTime % saturnYearDuration) / saturnYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Uranus autour du soleil avec la même échelle de temps
-  uranus.rotation.y =
-    ((currentTime % uranusYearDuration) / uranusYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Neptune autour du soleil avec la même échelle de temps
-  neptune.rotation.y =
-    ((currentTime % neptuneYearDuration) / neptuneYearDuration) * 2 * Math.PI;
-
-  // Faites tourner Pluton autour du soleil avec la même échelle de temps
-  pluto.rotation.y =
-    ((currentTime % plutoYearDuration) / plutoYearDuration) * 2 * Math.PI;
-
-  // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
-  earth.position.x = env.planetData.earth.orbitRadius * Math.cos(earth.rotation.y);
-  earth.position.z = env.planetData.earth.orbitRadius * Math.sin(earth.rotation.y);
 
   moon.position.x =
-    earth.position.x + env.planetData.moon.orbitRadius * Math.cos(moon.rotation.y);
+    earth.mesh.position.x + env.planetData.moon.orbitRadius * Math.cos(moon.rotation.y);
   moon.position.z =
-    earth.position.z + env.planetData.moon.orbitRadius * Math.sin(moon.rotation.y);
-
-  mercury.position.x = env.planetData.mercury.orbitRadius * Math.cos(-mercury.rotation.y);
-  mercury.position.z = env.planetData.mercury.orbitRadius * Math.sin(-mercury.rotation.y);
-
-  venus.position.x = env.planetData.venus.orbitRadius * Math.cos(-venus.rotation.y);
-  venus.position.z = env.planetData.venus.orbitRadius * Math.sin(-venus.rotation.y);
-
-  mars.position.x = env.planetData.mars.orbitRadius * Math.cos(mars.rotation.y);
-  mars.position.z = env.planetData.mars.orbitRadius * Math.sin(mars.rotation.y);
-
-  jupiter.position.x = env.planetData.jupiter.orbitRadius * Math.cos(jupiter.rotation.y);
-  jupiter.position.z = env.planetData.jupiter.orbitRadius * Math.sin(jupiter.rotation.y);
-
-  saturn.position.x = env.planetData.saturn.orbitRadius * Math.cos(saturn.rotation.y);
-  saturn.position.z = env.planetData.saturn.orbitRadius * Math.sin(saturn.rotation.y);
-
-  uranus.position.x = env.planetData.uranus.orbitRadius * Math.cos(uranus.rotation.y);
-  uranus.position.z = env.planetData.uranus.orbitRadius * Math.sin(uranus.rotation.y);
-
-  neptune.position.x = env.planetData.neptune.orbitRadius * Math.cos(neptune.rotation.y);
-  neptune.position.z = env.planetData.neptune.orbitRadius * Math.sin(neptune.rotation.y);
-
-  pluto.position.x = env.planetData.pluto.orbitRadius * Math.cos(pluto.rotation.y);
-  pluto.position.z = env.planetData.pluto.orbitRadius * Math.sin(pluto.rotation.y);
-
-  moonOrbitLine.position.x = earth.position.x;
-  moonOrbitLine.position.z = earth.position.z;
+    earth.mesh.position.z + env.planetData.moon.orbitRadius * Math.sin(moon.rotation.y);
+  moonOrbitLine.position.x = earth.mesh.position.x;
+  moonOrbitLine.position.z = earth.mesh.position.z;
 
   if (keypressed == true) {
-    earthOrbitLine.material.opacity = 1;
+    earth.orbit.material.opacity = 1;
     moonOrbitLine.material.opacity = 1; // Orbite visible
-    marsOrbitLine.material.opacity = 1;
-    mercuryOrbitLine.material.opacity = 1;
-    venusOrbitLine.material.opacity = 1;
-    jupiterOrbitLine.material.opacity = 1;
-    saturnOrbitLine.material.opacity = 1;
-    uranusOrbitLine.material.opacity = 1;
-    neptuneOrbitLine.material.opacity = 1;
-    plutoOrbitLine.material.opacity = 1;
+    mars.orbit.material.opacity = 1;
+    mercury.orbit.material.opacity = 1;
+    venus.orbit.material.opacity = 1;
+    jupiter.orbit.material.opacity = 1;
+    saturn.orbit.material.opacity = 1;
+    uranus.orbit.material.opacity = 1;
+    neptune.orbit.material.opacity = 1;
+    pluto.orbit.material.opacity = 1;
   } else {
-    earthOrbitLine.material.opacity = 0;
+    earth.orbit.material.opacity = 0;
     moonOrbitLine.material.opacity = 0; // Orbite invisible
-    marsOrbitLine.material.opacity = 0;
-    mercuryOrbitLine.material.opacity = 0;
-    venusOrbitLine.material.opacity = 0;
-    jupiterOrbitLine.material.opacity = 0;
-    saturnOrbitLine.material.opacity = 0;
-    uranusOrbitLine.material.opacity = 0;
-    neptuneOrbitLine.material.opacity = 0;
-    plutoOrbitLine.material.opacity = 0;
+    mars.orbit.material.opacity = 0;
+    mercury.orbit.material.opacity = 0;
+    venus.orbit.material.opacity = 0;
+    jupiter.orbit.material.opacity = 0;
+    saturn.orbit.material.opacity = 0;
+    uranus.orbit.material.opacity = 0;
+    neptune.orbit.material.opacity = 0;
+    pluto.orbit.material.opacity = 0;
   }
 
-  sun.rotation.y += 0.01;
+  sun.mesh.rotation.y += 0.01;
 
+  earth.update()
+  mercury.update()
+  venus.update()
+  mars.update()
+  jupiter.update()
+  saturn.update()
+  uranus.update()
+  neptune.update()
+  pluto.update()
   // Mettez à jour OrbitControls
   controls.update();
 

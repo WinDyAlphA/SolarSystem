@@ -8,6 +8,13 @@ import * as env from './const.js';
 function createSphere(radius, segments, material) {
   const geometry = new THREE.SphereGeometry(radius, segments, segments);
   const mesh = new THREE.Mesh(geometry, material);
+  mesh.receiveShadow = true
+  mesh.castShadow = true
+  return mesh;
+}
+function createSun(radius, segments, material) {
+  const geometry = new THREE.SphereGeometry(radius, segments, segments);
+  const mesh = new THREE.Mesh(geometry, material);
   return mesh;
 }
 const objectToFollow = {};
@@ -52,7 +59,6 @@ function createOrbit(radius) {
 
   // Marquez l'objet comme une orbite
   orbitLine.isOrbit = true;
-
   return orbitLine;
 }
 
@@ -120,12 +126,11 @@ var solarSystem = new THREE.Object3D();
 scene.add(solarSystem);
 
 // Add sun
-const sun = createSphere(7, 32, sunMaterial);
+const sun = createSun(7, 32, sunMaterial);
 sun.scale.set(0.4, 0.4, 0.4);
 solarSystem.add(sun);
 
-// Activer les ombres pour le soleil
-sun.castShadow = true;
+
 
 // Add background
 const backgroundMesh = createSphere(400, 32, backgroundMaterial);
@@ -164,6 +169,7 @@ const earthMaterial = new THREE.MeshPhongMaterial({
 });
 const earth = createSphere(env.planetData.earth.radius, 32, earthMaterial);
 earth.position.set(20, 0, 0);
+
 earth.scale.set(0.5, 0.5, 0.5);
 solarSystem.add(earth);
 

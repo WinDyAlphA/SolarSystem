@@ -3,6 +3,7 @@ import { ColorManagement } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PCDLoader } from 'three/addons/loaders/PCDLoader.js';
 import { ObjetStellaire } from "./ObjetStellaire.js";
+import { Satelite } from "./Satelite.js";
 
 import * as env from './const.js';
 // Fonction pour créer une sphère avec un matériau de base
@@ -13,6 +14,8 @@ function createSphere(radius, segments, material) {
   mesh.castShadow = true
   return mesh;
 }
+
+
 const objectToFollow = {};
 let isFollowing = false;
 function onClick(event) {
@@ -148,8 +151,29 @@ const earth = new ObjetStellaire(env.planetData.earth.radius,
   earthMaterial,
   env.planetData.earth.orbitRadius,
   env.planetData.earth.eccentricity,
+  true,
+  null,
+  1
   )
 earth.addToScene(scene);
+
+const moonMaterial = new THREE.MeshPhongMaterial({
+  map: textureLoader.load(env.planetData.moon.texture),
+});
+
+const moon = new Satelite(earth,
+  0.2,
+  32,
+  moonMaterial,
+  env.planetData.moon.orbitRadius,
+  0,
+  true,
+  null,
+  10,
+  1)
+
+moon.addToScene(scene);
+
 
 
 const mercuryMaterial = new THREE.MeshPhongMaterial({
@@ -272,15 +296,7 @@ sunLight.intensity = env.sunLightIntensity;
 scene.add(sunLight);
 
 
-//ajouter la lune
-const moonMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load(env.planetData.moon.texture),
-});
-const moon = createSphere(env.planetData.moon.radius, 32, moonMaterial);
-moon.position.set(2, 0, 0);
-moon.scale.set(0.2, 0.2, 0.2);
 
-solarSystem.add(moon);
 
 
 //creation de l'anneau de saturne
@@ -299,23 +315,6 @@ const saturnRing = new THREE.Mesh(
 saturnRing.rotation.x = Math.PI / 2;
 saturn.mesh.add(saturnRing);
 
-// Créez des géométries de cercle pour les orbites (par exemple, pour la Terre)
-
-const moonOrbitGeometry = new THREE.RingGeometry(
-  env.planetData.moon.orbitRadius,
-  env.planetData.moon.orbitRadius,
-  180
-);
-const orbitMaterial = new THREE.LineBasicMaterial({
-  color: 0xffffff,
-  transparent: true,
-  opacity: 0,
-});
-const moonOrbitLine = new THREE.Line(moonOrbitGeometry, orbitMaterial);
-moonOrbitLine.rotation.x = Math.PI / 2;
-// Ajoutez les lignes d'orbite à la scène
-
-scene.add(moonOrbitLine);
 
 const saturnRingInclination = 69; //27deg Inclinaison en degrés
 
@@ -330,9 +329,6 @@ const yearDuration = env.yearDuration;
 
 // Durée relative pour Mercure (en millisecondes) par exemple, 1/5 de la durée de l'année
 const mercuryYearDuration = yearDuration / 5;
-
-// Durée relative pour la Lune (en millisecondes) par exemple, 1/10 de la durée de l'année
-const moonYearDuration = yearDuration / 10;
 
 var keypressed = false;
 document.addEventListener("keydown", function (event) {
@@ -431,20 +427,11 @@ function render() {
 
 
   // Faites tourner la Lune autour de la Terre avec la même échelle de temps
-  moon.rotation.y =
-    ((currentTime % moonYearDuration) / moonYearDuration) * 2 * Math.PI;
 
-
-  moon.position.x =
-    earth.mesh.position.x + env.planetData.moon.orbitRadius * Math.cos(moon.rotation.y);
-  moon.position.z =
-    earth.mesh.position.z + env.planetData.moon.orbitRadius * Math.sin(moon.rotation.y);
-  moonOrbitLine.position.x = earth.mesh.position.x;
-  moonOrbitLine.position.z = earth.mesh.position.z;
 
   if (keypressed == true) {
     earth.orbit.material.opacity = 1;
-    moonOrbitLine.material.opacity = 1; // Orbite visible
+    moon.orbit.material.opacity = 1; // Orbite visible
     mars.orbit.material.opacity = 1;
     mercury.orbit.material.opacity = 1;
     venus.orbit.material.opacity = 1;
@@ -455,7 +442,7 @@ function render() {
     pluto.orbit.material.opacity = 1;
   } else {
     earth.orbit.material.opacity = 0;
-    moonOrbitLine.material.opacity = 0; // Orbite invisible
+    moon.orbit.material.opacity = 0; // Orbite invisible
     mars.orbit.material.opacity = 0;
     mercury.orbit.material.opacity = 0;
     venus.orbit.material.opacity = 0;
@@ -477,6 +464,7 @@ function render() {
   uranus.update()
   neptune.update()
   pluto.update()
+  moon.update()
   // Mettez à jour OrbitControls
   controls.update();
 

@@ -15,7 +15,7 @@ export const planetData = {
   moon: {
     name:"moon",
     radius: 0.2,
-    orbitRadius: 1,
+    orbitRadius: 2,
     texture: "textures/moon/moonmap1k.jpg",
     rotation:1,
   },

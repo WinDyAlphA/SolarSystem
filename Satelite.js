@@ -2,9 +2,9 @@ import * as THREE from "three";
 import { Matrix3 } from "three";
 import * as env from './const.js';
 
-export class ObjetStellaire{
-  constructor(radius, segments, material, orbitRadius, eccentricity, castShadow = true, calcul = null, sensRotation = 1) {
-
+export class Satelite{
+  constructor(planete, radius, segments, material, orbitRadius, eccentricity, castShadow = true, calcul = null, sensRotation = 1) {
+    this.planete = planete;
     this.radius = radius;
     this.segments = segments;
     this.material = material;
@@ -56,10 +56,19 @@ export class ObjetStellaire{
   update() {
     const currentTime = Date.now();
     const yearDuration = this.calcul ? env.yearDuration * this.calcul : env.yearDuration;
-
     this.mesh.rotation.y = ((currentTime % yearDuration) / yearDuration) * 2 * Math.PI;
     // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
-    this.mesh.position.x = this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
-    this.mesh.position.z = this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
+    console.log(this.orbitRadius)
+    console.log(this.mesh.rotation.y)
+    console.log(this.sensRotation)
+    console.log(this.eccentricity)
+    this.mesh.position.x = this.planete.mesh.position.x + this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
+    this.mesh.position.z = this.planete.mesh.position.z +this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
+    
+
+    this.orbit.position.x = this.planete.mesh.position.x;
+    this.orbit.position.z = this.planete.mesh.position.z;
+
+
   }
 }

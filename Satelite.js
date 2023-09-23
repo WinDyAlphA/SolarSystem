@@ -58,10 +58,6 @@ export class Satelite{
     const yearDuration = this.calcul ? env.yearDuration * this.calcul : env.yearDuration;
     this.mesh.rotation.y = ((currentTime % yearDuration) / yearDuration) * 2 * Math.PI;
     // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
-    console.log(this.orbitRadius)
-    console.log(this.mesh.rotation.y)
-    console.log(this.sensRotation)
-    console.log(this.eccentricity)
     this.mesh.position.x = this.planete.mesh.position.x + this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
     this.mesh.position.z = this.planete.mesh.position.z +this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
     

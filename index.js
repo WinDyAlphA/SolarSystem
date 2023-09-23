@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PCDLoader } from 'three/addons/loaders/PCDLoader.js';
 import { ObjetStellaire } from "./ObjetStellaire.js";
 import { Satelite } from "./Satelite.js";
+import { Anneaux } from "./Anneaux.js";
 
 import * as env from './const.js';
 // Fonction pour créer une sphère avec un matériau de base
@@ -298,31 +299,25 @@ scene.add(sunLight);
 
 
 
-
-//creation de l'anneau de saturne
-const saturnRingMaterial = new THREE.MeshPhongMaterial({
+const saturnRingMaterial = new THREE.MeshBasicMaterial({
   map: textureLoader.load("textures/saturn/saturn_ring.png"),
   side: THREE.DoubleSide,
 });
-const saturnRing = new THREE.Mesh(
-  new THREE.RingGeometry(
-    env.planetData.saturn.radius + 1,
-    env.planetData.saturn.radius + 8,
-    32
-  ),
-  saturnRingMaterial
-);
-saturnRing.rotation.x = Math.PI / 2;
-saturn.mesh.add(saturnRing);
+
+const saturnRing = new Anneaux(saturn,
+  saturnRingMaterial,
+  1,
+  7,
+  69,
+
+  )
+
+saturnRing.addToScene(scene);
 
 
-const saturnRingInclination = 69; //27deg Inclinaison en degrés
+ //27deg Inclinaison en degrés
 
-// Convertissez l'inclinaison en radians
-const inclinationRadians = (saturnRingInclination / 180) * Math.PI;
 
-// Appliquez la rotation aux anneaux de Saturne (assurez-vous que l'objet des anneaux est un enfant de l'objet Saturne)
-saturnRing.rotation.x = inclinationRadians;
 
 // Durée d'une année en millisecondes (10 secondes dans la simulation)
 const yearDuration = env.yearDuration;
@@ -461,6 +456,7 @@ function render() {
   mars.update()
   jupiter.update()
   saturn.update()
+  saturnRing.update()
   uranus.update()
   neptune.update()
   pluto.update()

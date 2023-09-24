@@ -92,54 +92,27 @@ controls.dampingFactor = 0.05;
 
 // Create all the planets and add them to the scene
 
-var solarSystem = new THREE.Object3D();
-scene.add(solarSystem);
+var solarSystemSC = new THREE.Object3D();
+scene.add(solarSystemSC);
 
-const sun = new ObjetStellaire(env.planetData.sun.radius,32,material.sun,0,0,0,false)
-sun.addToScene(solarSystem);
-
-const earth = new ObjetStellaire(env.planetData.earth.radius,32,material.earth,env.planetData.earth.orbitRadius,env.planetData.earth.eccentricity,env.planetData.earth.obliquity,true,null,1)
-earth.addToScene(solarSystem);
-
-const moon = new ObjetSatellitaire(earth,0.2,32,env.planetData.moon.texture,env.planetData.moon.orbitRadius,env.planetData.moon.eccentricity,true,null,10,1)
-moon.addToScene(solarSystem);
-
-const mercury = new ObjetStellaire(env.planetData.mercury.radius,32,env.planetData.mercury.texture,env.planetData.mercury.orbitRadius,env.planetData.mercury.eccentricity,env.planetData.mercury.obliquity,true, 1/5, -1)
-mercury.addToScene(solarSystem);
-
-const venus = new ObjetStellaire(env.planetData.venus.radius,32,env.planetData.venus.texture,env.planetData.venus.orbitRadius,env.planetData.venus.eccentricity,env.planetData.venus.obliquity, true, 1/3 , -1)
-venus.addToScene(solarSystem);
-
-const mars = new ObjetStellaire(env.planetData.mars.radius,32,env.planetData.mars.texture,env.planetData.mars.orbitRadius,env.planetData.mars.eccentricity,env.planetData.mars.obliquity, true, 2/5)
-mars.addToScene(solarSystem);
-
-const jupiter = new ObjetStellaire(env.planetData.jupiter.radius,32,env.planetData.jupiter.texture,env.planetData.jupiter.orbitRadius,env.planetData.jupiter.eccentricity,env.planetData.jupiter.obliquity, true,3/10)
-jupiter.addToScene(solarSystem);
-
-const saturn = new ObjetStellaire(env.planetData.saturn.radius,32,env.planetData.saturn.texture,env.planetData.saturn.orbitRadius,env.planetData.saturn.eccentricity,env.planetData.saturn.obliquity, true,3/9)
-saturn.addToScene(solarSystem);
-
-const uranus = new ObjetStellaire(env.planetData.uranus.radius,32,env.planetData.uranus.texture,env.planetData.uranus.orbitRadius,env.planetData.uranus.eccentricity,env.planetData.uranus.obliquity, true,4/2)
-uranus.addToScene(solarSystem);
-
-const neptune = new ObjetStellaire(env.planetData.neptune.radius,32,env.planetData.neptune.texture,env.planetData.neptune.orbitRadius,env.planetData.neptune.eccentricity,env.planetData.neptune.obliquity, true,4/5)
-neptune.addToScene(solarSystem);
-
-const pluto = new ObjetStellaire(env.planetData.pluto.radius,32,env.planetData.pluto.texture,env.planetData.pluto.orbitRadius,env.planetData.pluto.eccentricity,env.planetData.pluto.obliquity, true,14/8)
-pluto.addToScene(solarSystem);
+const earth = new ObjetStellaire(env.planetData.earth.radius,32,material.earth,env.planetData.earth.orbitRadius,env.planetData.earth.eccentricity,env.planetData.earth.obliquity,true,null,1);
 
 let solarsystem = {
-  sun: sun,
+  sun: new ObjetStellaire(env.planetData.sun.radius,32,material.sun,0,0,0,false),
   earth: earth,
-  moon: moon,
-  mercury: mercury,
-  venus: venus,
-  mars: mars,
-  jupiter: jupiter,
-  saturn: saturn,
-  uranus: uranus,
-  neptune: neptune,
-  pluto: pluto,
+  moon: new ObjetSatellitaire(earth,0.2,32,env.planetData.moon.texture,env.planetData.moon.orbitRadius,env.planetData.moon.eccentricity,true,null,10,1),
+  mercury: new ObjetStellaire(env.planetData.mercury.radius,32,env.planetData.mercury.texture,env.planetData.mercury.orbitRadius,env.planetData.mercury.eccentricity,env.planetData.mercury.obliquity,true, 1/5, -1),
+  venus: new ObjetStellaire(env.planetData.venus.radius,32,env.planetData.venus.texture,env.planetData.venus.orbitRadius,env.planetData.venus.eccentricity,env.planetData.venus.obliquity, true, 1/3 , -1),
+  mars: new ObjetStellaire(env.planetData.mars.radius,32,env.planetData.mars.texture,env.planetData.mars.orbitRadius,env.planetData.mars.eccentricity,env.planetData.mars.obliquity, true, 2/5),
+  jupiter: new ObjetStellaire(env.planetData.jupiter.radius,32,env.planetData.jupiter.texture,env.planetData.jupiter.orbitRadius,env.planetData.jupiter.eccentricity,env.planetData.jupiter.obliquity, true,3/10),
+  saturn: new ObjetStellaire(env.planetData.saturn.radius,32,env.planetData.saturn.texture,env.planetData.saturn.orbitRadius,env.planetData.saturn.eccentricity,env.planetData.saturn.obliquity, true,3/9),
+  uranus: new ObjetStellaire(env.planetData.uranus.radius,32,env.planetData.uranus.texture,env.planetData.uranus.orbitRadius,env.planetData.uranus.eccentricity,env.planetData.uranus.obliquity, true,4/2),
+  neptune: new ObjetStellaire(env.planetData.neptune.radius,32,env.planetData.neptune.texture,env.planetData.neptune.orbitRadius,env.planetData.neptune.eccentricity,env.planetData.neptune.obliquity, true,4/5),
+  pluto: new ObjetStellaire(env.planetData.pluto.radius,32,env.planetData.pluto.texture,env.planetData.pluto.orbitRadius,env.planetData.pluto.eccentricity,env.planetData.pluto.obliquity, true,14/8),
+}
+
+for (const planet in solarsystem) {
+  solarsystem[planet].addToScene(solarSystemSC);
 }
 
 
@@ -166,8 +139,8 @@ const saturnRingMaterial = new THREE.MeshPhongMaterial({
   side: THREE.DoubleSide,
 });
 
-const saturnRing = new Anneaux(saturn,saturnRingMaterial,1,7,69,)
-saturnRing.addToScene(solarSystem);
+const saturnRing = new Anneaux(solarsystem.saturn,saturnRingMaterial,1,7,69,)
+saturnRing.addToScene(solarSystemSC);
 
 
 var keypressed = false;
@@ -185,15 +158,15 @@ document.addEventListener("keyup", function (event) {
 });
 
 const planetOrbitMapping = {
-  [env.planetData.earth.orbitRadius]: earth.mesh,
-  [env.planetData.mercury.orbitRadius]: mercury.mesh,
-  [env.planetData.venus.orbitRadius]: venus.mesh,
-  [env.planetData.mars.orbitRadius]: mars.mesh,
-  [env.planetData.jupiter.orbitRadius]: jupiter.mesh,
-  [env.planetData.saturn.orbitRadius]: saturn.mesh,
-  [env.planetData.uranus.orbitRadius]: uranus.mesh,
-  [env.planetData.neptune.orbitRadius]: neptune.mesh,
-  [env.planetData.pluto.orbitRadius]: pluto.mesh,
+  [env.planetData.earth.orbitRadius]: solarsystem.earth.mesh,
+  [env.planetData.mercury.orbitRadius]: solarsystem.mercury.mesh,
+  [env.planetData.venus.orbitRadius]: solarsystem.venus.mesh,
+  [env.planetData.mars.orbitRadius]: solarsystem.mars.mesh,
+  [env.planetData.jupiter.orbitRadius]: solarsystem.jupiter.mesh,
+  [env.planetData.saturn.orbitRadius]: solarsystem.saturn.mesh,
+  [env.planetData.uranus.orbitRadius]: solarsystem.uranus.mesh,
+  [env.planetData.neptune.orbitRadius]: solarsystem.neptune.mesh,
+  [env.planetData.pluto.orbitRadius]: solarsystem.pluto.mesh,
 };
 
 function getTargetObject(orbitRadius) {
@@ -213,7 +186,7 @@ function render() {
     const targetObject = getTargetObject(objectToFollow.object.geometry.parameters.innerRadius);
 
     if (targetObject) {
-      const offset = targetObject === earth.mesh || targetObject === mercury.mesh || targetObject === venus.mesh || targetObject === mars.mesh || targetObject === pluto.mesh ? 1 : 31;
+      const offset = targetObject === solarsystem.earth.mesh || targetObject === solarsystem.mercury.mesh || targetObject === solarsystem.venus.mesh || targetObject === solarsystem.mars.mesh || targetObject === solarsystem.pluto.mesh ? 1 : 31;
 
       const targetPosition = new THREE.Vector3(
         targetObject.position.x + offset * Math.cos(cameraRotationSpeed) + 1,
@@ -251,19 +224,18 @@ function render() {
     }
   }
 
-  sun.mesh.rotation.y += 0.01;
 
-  earth.update()
-  mercury.update()
-  venus.update()
-  mars.update()
-  jupiter.update()
-  saturn.update()
+  solarsystem.earth.update()
+  solarsystem.mercury.update()
+  solarsystem.venus.update()
+  solarsystem.mars.update()
+  solarsystem.jupiter.update()
+  solarsystem.saturn.update()
   saturnRing.update()
-  uranus.update()
-  neptune.update()
-  pluto.update()
-  moon.update()
+  solarsystem.uranus.update()
+  solarsystem.neptune.update()
+  solarsystem.pluto.update()
+  solarsystem.moon.update()
   // Mettez à jour OrbitControls
   controls.update();
 

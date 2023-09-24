@@ -17,7 +17,7 @@ export class ObjetStellaire{
     this.mesh = this.createPlanet();
     
     this.orbit = this.createOrbit();
-
+    
     // Ajouter la planète et l'orbite à la scène
   }
 
@@ -30,11 +30,26 @@ export class ObjetStellaire{
 
   createPlanet() {
     const geometry = new THREE.SphereGeometry(this.radius, this.segments, this.segments);
-    const materialOptions = this.material
-    const mesh = new THREE.Mesh(geometry, materialOptions);
-    mesh.castShadow = this.castShadow; // Activer ou désactiver l'ombre en fonction du paramètre
-    mesh.receiveShadow = this.castShadow;
-    return mesh;
+    if (typeof this.material == 'string'){
+      const textureLoader = new THREE.TextureLoader();
+      const texture = textureLoader.load(this.material);
+      const materialOptions = new THREE.MeshStandardMaterial({
+        map: texture,
+      });
+      const mesh = new THREE.Mesh(geometry, materialOptions);
+      mesh.castShadow = this.castShadow; // Activer ou désactiver l'ombre en fonction du paramètre
+      mesh.receiveShadow = this.castShadow;
+      
+      return mesh;
+    }
+    else {
+      const materialOptions = this.material
+      const mesh = new THREE.Mesh(geometry, materialOptions);
+      mesh.castShadow = this.castShadow; // Activer ou désactiver l'ombre en fonction du paramètre
+      mesh.receiveShadow = this.castShadow;
+      return mesh;
+    }
+    
   }
 
   createOrbit() {

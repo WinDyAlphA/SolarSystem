@@ -1,5 +1,7 @@
 export const sunLightIntensity = 2000;
 export const sunLightColor = 0xffffff;
+export const ambientLightIntensity = 0.1;
+export const ambientLightColor = 0xffffff;
 
 
 export const yearDuration = 100000;

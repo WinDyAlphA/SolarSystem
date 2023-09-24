@@ -297,10 +297,10 @@ sunLight.intensity = env.sunLightIntensity;
 scene.add(sunLight);
 
 
+const saturnRingTexture = textureLoader.load("textures/saturn/saturnring_full.jpeg"); // Remplacez le chemin avec le chemin vers votre texture circulaire
 
-
-const saturnRingMaterial = new THREE.MeshBasicMaterial({
-  map: textureLoader.load("textures/saturn/saturn_ring.png"),
+const saturnRingMaterial = new THREE.MeshPhongMaterial({
+  map: saturnRingTexture, // Utilisez la texture circulaire que vous avez chargée
   side: THREE.DoubleSide,
 });
 

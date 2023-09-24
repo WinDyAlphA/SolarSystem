@@ -136,8 +136,8 @@ export class ObjetStellaire{
     this.mesh.position.z = this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
 
     this.sprite.position.set(
-      this.mesh.position.x,
-      this.mesh.position.y + 1.5 + this.radius, // Ajustez la position verticale
+      this.mesh.position.x + 1.5 + this.radius*0.8,
+      this.mesh.position.y + 1.5 + this.radius*1.2, // Ajustez la position verticale
       this.mesh.position.z)
       this.updateTextSize(this.sprite, this.camera);
   }

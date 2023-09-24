@@ -134,7 +134,7 @@ export class ObjetSatellitaire{
     this.orbit.position.x = this.planete.position.x;
     this.orbit.position.z = this.planete.position.z;
     this.sprite.position.set(
-        this.mesh.position.x,
+        this.mesh.position.x + 1.5 + this.radius,
         this.mesh.position.y + 1.5 + this.radius, // Ajustez la position verticale
         this.mesh.position.z)
         this.updateTextSize(this.sprite, this.camera);

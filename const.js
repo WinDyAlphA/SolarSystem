@@ -13,6 +13,7 @@ export const planetData = {
     orbitRadius:0,
     texture: '.',
     rotation:1,
+    
   },
   moon: {
     name:"moon",
@@ -25,7 +26,7 @@ export const planetData = {
   mercury: {
     name:"mercury",
     radius: 0.25,
-    orbitRadius: 2.5 + 5,
+    orbitRadius: 2 + 5,
     texture: "textures/mercury/mercury.jpg",
     rotation:-1,
     eccentricity: 0.20563069,
@@ -61,7 +62,7 @@ export const planetData = {
   jupiter: {
     name:"jupiter",
     radius: 11,
-    orbitRadius: 37.5 + 5 +15,
+    orbitRadius: 37 + 5 +15,
     texture: "textures/jupiter/jupiter.jpeg",
     rotation:1,
     eccentricity: 0.04839266,

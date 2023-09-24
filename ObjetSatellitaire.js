@@ -1,10 +1,13 @@
 import * as THREE from "three";
 import { Matrix3 } from "three";
 import * as env from './const.js';
+import { TextureLoader, Sprite, SpriteMaterial } from "three";
 
 export class ObjetSatellitaire{
-  constructor(planete,radius, segments, material, orbitRadius, eccentricity, castShadow = true, calcul = null, sensRotation = 1) {
+  constructor(planete,camera,radius, segments, material, orbitRadius, eccentricity,nom='unknow',castShadow = true, calcul = null, sensRotation = 1) {
     this.planete = planete.mesh;
+    this.camera = camera;
+    this.nom = nom;
     this.radius = radius;
     this.segments = segments;
     this.material = material;
@@ -19,7 +22,10 @@ export class ObjetSatellitaire{
     this.orbit = this.createOrbit();
 
     this.clickOrbit = this.createOrbit();
+
+    this.sprite = this.createTextSprite(this.nom, 'white', 16);
     
+    this.sprite.visible = false;
     // Ajouter la planète et l'orbite à la scène
   }
 
@@ -27,9 +33,40 @@ export class ObjetSatellitaire{
     scene.add(this.mesh);
     scene.add(this.orbit);
     scene.add(this.clickOrbit);
+    scene.add(this.sprite);
   }
 
+  updateTextVisibility(value) {
+    this.sprite.visible = value;
+  }
+
+  createTextSprite(text, color, textSize) {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    context.font = `${textSize}px Arial`;
+    const textWidth = context.measureText(text).width;
   
+    canvas.width = textWidth;
+    canvas.height = textSize;
+  
+    context.font = `${textSize}px Arial`;
+    context.fillStyle = color;
+    context.fillText(text, 0, textSize);
+  
+    const texture = new THREE.TextureLoader().load(canvas.toDataURL());
+  
+    const material = new SpriteMaterial({ map: texture });
+    const sprite = new Sprite(material);
+    sprite.scale.set(1, 1, 1); // Ajustez l'échelle selon vos besoins
+  
+    return sprite;
+  }
+  updateTextSize(textSprite, camera) {
+    const distance = textSprite.position.distanceTo(camera.position);
+    const newSize = distance/20; // Vous pouvez ajuster ce facteur selon vos besoins
+  
+    textSprite.scale.set(newSize, newSize, 1);
+  }
 
   createPlanet() {
     const geometry = new THREE.SphereGeometry(this.radius, this.segments, this.segments);
@@ -96,6 +133,11 @@ export class ObjetSatellitaire{
 
     this.orbit.position.x = this.planete.position.x;
     this.orbit.position.z = this.planete.position.z;
+    this.sprite.position.set(
+        this.mesh.position.x,
+        this.mesh.position.y + 1.5 + this.radius, // Ajustez la position verticale
+        this.mesh.position.z)
+        this.updateTextSize(this.sprite, this.camera);
   }
 
 }

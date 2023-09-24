@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { Matrix3 } from "three";
 import * as env from './const.js';
+import { TextureLoader, Sprite, SpriteMaterial } from "three";
 
 export class ObjetStellaire{
-  constructor(radius, segments, material, orbitRadius, eccentricity, obliquity = 0, castShadow = true, calcul = null, sensRotation = 1) {
-
+  constructor(camera,radius, segments, material, orbitRadius, eccentricity, obliquity = 0, castShadow = true, name = 'unknow', calcul = null, sensRotation = 1) {
+    this.camera = camera;
     this.radius = radius;
     this.segments = segments;
     this.material = material;
@@ -13,7 +14,7 @@ export class ObjetStellaire{
     this.castShadow = castShadow;
     this.sensRotation = sensRotation;
     this.calcul = calcul
-
+    this.name = name;
     this.obliquity = obliquity;
     // Créer la planète et stocker le mesh dans la propriété "mesh"
     this.mesh = this.createPlanet();
@@ -21,6 +22,10 @@ export class ObjetStellaire{
     this.orbit = this.createOrbit();
 
     this.clickOrbit = this.createClickableOrbit();
+
+    this.sprite = this.createTextSprite(this.name, 'white', 16);
+
+    this.sprite.visible = false;
     
     // Ajouter la planète et l'orbite à la scène
   }
@@ -29,10 +34,40 @@ export class ObjetStellaire{
     scene.add(this.mesh);
     scene.add(this.orbit);
     scene.add(this.clickOrbit);
+    scene.add(this.sprite);
   }
 
-  
+  updateTextVisibility(value) {
+    this.sprite.visible = value;
+  }
 
+  createTextSprite(text, color, textSize) {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    context.font = `${textSize}px Arial`;
+    const textWidth = context.measureText(text).width;
+  
+    canvas.width = textWidth;
+    canvas.height = textSize;
+  
+    context.font = `${textSize}px Arial`;
+    context.fillStyle = color;
+    context.fillText(text, 0, textSize);
+  
+    const texture = new THREE.TextureLoader().load(canvas.toDataURL());
+  
+    const material = new SpriteMaterial({ map: texture });
+    const sprite = new Sprite(material);
+    sprite.scale.set(1, 1, 1); // Ajustez l'échelle selon vos besoins
+  
+    return sprite;
+  }
+  updateTextSize(textSprite, camera) {
+    const distance = textSprite.position.distanceTo(camera.position);
+    const newSize = distance/20; // Vous pouvez ajuster ce facteur selon vos besoins
+  
+    textSprite.scale.set(newSize, newSize, 1);
+  }
   createPlanet() {
     const geometry = new THREE.SphereGeometry(this.radius, this.segments, this.segments);
     if (typeof this.material == 'string'){
@@ -99,5 +134,11 @@ export class ObjetStellaire{
     // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
     this.mesh.position.x = this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
     this.mesh.position.z = this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
+
+    this.sprite.position.set(
+      this.mesh.position.x,
+      this.mesh.position.y + 1.5 + this.radius, // Ajustez la position verticale
+      this.mesh.position.z)
+      this.updateTextSize(this.sprite, this.camera);
   }
 }

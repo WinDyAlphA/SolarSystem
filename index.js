@@ -6,6 +6,7 @@ import { ObjetStellaire } from "./ObjetStellaire.js";
 import { ObjetSatellitaire } from "./ObjetSatellitaire.js";
 import { Anneaux } from "./Anneaux.js";
 import * as material from './materials.js';
+import { TextureLoader, Sprite, SpriteMaterial } from "three";
 
 import * as env from './const.js';
 // Fonction pour créer une sphère avec un matériau de base
@@ -21,6 +22,31 @@ const textureLoader = new THREE.TextureLoader();
 
 const objectToFollow = {};
 let isFollowing = false;
+
+
+
+function createTextSprite(text, color, textSize) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  context.font = `${textSize}px Arial`;
+  const textWidth = context.measureText(text).width;
+
+  canvas.width = textWidth;
+  canvas.height = textSize;
+
+  context.font = `${textSize}px Arial`;
+  context.fillStyle = color;
+  context.fillText(text, 0, textSize);
+
+  const texture = new TextureLoader().load(canvas.toDataURL());
+
+  const material = new SpriteMaterial({ map: texture });
+  const sprite = new Sprite(material);
+  sprite.scale.set(1, 1, 1); // Ajustez l'échelle selon vos besoins
+
+  return sprite;
+}
+
 function onClick(event) {
   // Obtenez la position du clic de la souris en coordonnées normalisées
   const mouse = new THREE.Vector2();
@@ -95,20 +121,20 @@ controls.dampingFactor = 0.05;
 var solarSystemSC = new THREE.Object3D();
 scene.add(solarSystemSC);
 
-const earth = new ObjetStellaire(env.planetData.earth.radius,32,material.earth,env.planetData.earth.orbitRadius,env.planetData.earth.eccentricity,env.planetData.earth.obliquity,true,null,1);
+const earth = new ObjetStellaire(camera,env.planetData.earth.radius,32,material.earth,env.planetData.earth.orbitRadius,env.planetData.earth.eccentricity,env.planetData.earth.obliquity,true,env.planetData.earth.name,null,1);
 
 let solarsystem = {
-  sun: new ObjetStellaire(env.planetData.sun.radius,32,material.sun,0,0,0,false),
+  sun: new ObjetStellaire(camera,env.planetData.sun.radius,32,material.sun,0,0,0,false,env.planetData.sun.name),
   earth: earth,
-  moon: new ObjetSatellitaire(earth,0.2,32,env.planetData.moon.texture,env.planetData.moon.orbitRadius,env.planetData.moon.eccentricity,true,null,10,1),
-  mercury: new ObjetStellaire(env.planetData.mercury.radius,32,env.planetData.mercury.texture,env.planetData.mercury.orbitRadius,env.planetData.mercury.eccentricity,env.planetData.mercury.obliquity,true, 1/5, -1),
-  venus: new ObjetStellaire(env.planetData.venus.radius,32,env.planetData.venus.texture,env.planetData.venus.orbitRadius,env.planetData.venus.eccentricity,env.planetData.venus.obliquity, true, 1/3 , -1),
-  mars: new ObjetStellaire(env.planetData.mars.radius,32,env.planetData.mars.texture,env.planetData.mars.orbitRadius,env.planetData.mars.eccentricity,env.planetData.mars.obliquity, true, 2/5),
-  jupiter: new ObjetStellaire(env.planetData.jupiter.radius,32,env.planetData.jupiter.texture,env.planetData.jupiter.orbitRadius,env.planetData.jupiter.eccentricity,env.planetData.jupiter.obliquity, true,3/10),
-  saturn: new ObjetStellaire(env.planetData.saturn.radius,32,env.planetData.saturn.texture,env.planetData.saturn.orbitRadius,env.planetData.saturn.eccentricity,env.planetData.saturn.obliquity, true,3/9),
-  uranus: new ObjetStellaire(env.planetData.uranus.radius,32,env.planetData.uranus.texture,env.planetData.uranus.orbitRadius,env.planetData.uranus.eccentricity,env.planetData.uranus.obliquity, true,4/2),
-  neptune: new ObjetStellaire(env.planetData.neptune.radius,32,env.planetData.neptune.texture,env.planetData.neptune.orbitRadius,env.planetData.neptune.eccentricity,env.planetData.neptune.obliquity, true,4/5),
-  pluto: new ObjetStellaire(env.planetData.pluto.radius,32,env.planetData.pluto.texture,env.planetData.pluto.orbitRadius,env.planetData.pluto.eccentricity,env.planetData.pluto.obliquity, true,14/8),
+  moon: new ObjetSatellitaire(earth,camera,0.2,32,env.planetData.moon.texture,env.planetData.moon.orbitRadius,env.planetData.moon.eccentricity,env.planetData.moon.name,true,null,10,1),
+  mercury: new ObjetStellaire(camera,env.planetData.mercury.radius,32,env.planetData.mercury.texture,env.planetData.mercury.orbitRadius,env.planetData.mercury.eccentricity,env.planetData.mercury.obliquity,true,env.planetData.mercury.name, 1/5, -1),
+  venus: new ObjetStellaire(camera,env.planetData.venus.radius,32,env.planetData.venus.texture,env.planetData.venus.orbitRadius,env.planetData.venus.eccentricity,env.planetData.venus.obliquity, true,env.planetData.venus.name, 1/3 , -1),
+  mars: new ObjetStellaire(camera,env.planetData.mars.radius,32,env.planetData.mars.texture,env.planetData.mars.orbitRadius,env.planetData.mars.eccentricity,env.planetData.mars.obliquity, true,env.planetData.mars.name, 2/5),
+  jupiter: new ObjetStellaire(camera,env.planetData.jupiter.radius,32,env.planetData.jupiter.texture,env.planetData.jupiter.orbitRadius,env.planetData.jupiter.eccentricity,env.planetData.jupiter.obliquity, true,env.planetData.jupiter.name,3/10),
+  saturn: new ObjetStellaire(camera,env.planetData.saturn.radius,32,env.planetData.saturn.texture,env.planetData.saturn.orbitRadius,env.planetData.saturn.eccentricity,env.planetData.saturn.obliquity, true,env.planetData.saturn.name,3/9),
+  uranus: new ObjetStellaire(camera,env.planetData.uranus.radius,32,env.planetData.uranus.texture,env.planetData.uranus.orbitRadius,env.planetData.uranus.eccentricity,env.planetData.uranus.obliquity, true,env.planetData.uranus.name,4/2),
+  neptune: new ObjetStellaire(camera,env.planetData.neptune.radius,32,env.planetData.neptune.texture,env.planetData.neptune.orbitRadius,env.planetData.neptune.eccentricity,env.planetData.neptune.obliquity, true,env.planetData.neptune.name,4/5),
+  pluto: new ObjetStellaire(camera,env.planetData.pluto.radius,32,env.planetData.pluto.texture,env.planetData.pluto.orbitRadius,env.planetData.pluto.eccentricity,env.planetData.pluto.obliquity, true,env.planetData.pluto.name,14/8),
 }
 
 for (const planet in solarsystem) {
@@ -157,6 +183,9 @@ document.addEventListener("keyup", function (event) {
   }
 });
 
+const textSprite = createTextSprite("Terre", "white", 43);
+solarSystemSC.add(textSprite);
+
 const planetOrbitMapping = {
   [env.planetData.earth.orbitRadius]: solarsystem.earth.mesh,
   [env.planetData.mercury.orbitRadius]: solarsystem.mercury.mesh,
@@ -199,45 +228,32 @@ function render() {
       controls.target.copy(targetObject.position);
       controls.update();
     }
+  } else {
+    
   }
-
-  // if (keypressed && isFollowing && objectToFollow) {
-  //     // Calculez la position de la caméra en fonction de la position de l'objet à suivre
-  //     const objectToFollowPosition = objectToFollow.object.position;
-  //     console.log(objectToFollowPosition)
-  //     camera.position.x = objectToFollowPosition.x;
-  //     camera.position.y = objectToFollowPosition.y;
-  //     camera.position.z = objectToFollowPosition.z + 10;
-  // }
-
-
-  // Faites tourner la Lune autour de la Terre avec la même échelle de temps
-
 
   if (keypressed == true) {
     for (const planet in solarsystem) {
       solarsystem[planet].orbit.material.opacity = 1;
+      solarsystem[planet].updateTextVisibility(true)
     }
   } else {
     for (const planet in solarsystem) {
       solarsystem[planet].orbit.material.opacity = 0;
+      solarsystem[planet].updateTextVisibility(false)
     }
   }
 
 
-  solarsystem.earth.update()
-  solarsystem.mercury.update()
-  solarsystem.venus.update()
-  solarsystem.mars.update()
-  solarsystem.jupiter.update()
-  solarsystem.saturn.update()
+  for (const planet in solarsystem) {
+      solarsystem[planet].update();
+    }
   saturnRing.update()
-  solarsystem.uranus.update()
-  solarsystem.neptune.update()
-  solarsystem.pluto.update()
-  solarsystem.moon.update()
+  
   // Mettez à jour OrbitControls
   controls.update();
+
+  
 
   //ajouter des ombres
   renderer.shadowMap.enabled = true;

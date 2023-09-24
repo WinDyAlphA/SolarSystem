@@ -20,7 +20,7 @@ fichier.write("DATA ascii\n")
 #i want to make a ring of point beetwen 17 and 22, need to calculate the angle with cos and sin
 for i in range(0, 10000):
     #random number between 17 and 22
-    r = random.uniform(17.5, 23)
+    r = random.uniform(17.5+6, 23+6)
     height = random.uniform(-0.5, 0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
@@ -67,7 +67,7 @@ for i in range(0, 500):
 for i in range(0, 1000):
     # Choisissez une hauteur aléatoire entre 20 et 23
     height = random.uniform(-3,3)
-    r = random.uniform(14, 26)
+    r = random.uniform(14+6, 26+6)
     # Choisissez un angle aléatoire entre 0 et 360 degrés
     angle = random.uniform(0, 360)
 
@@ -79,7 +79,7 @@ for i in range(0, 1000):
 
 for i in range(0, 600):
     #random number between 17 and 22
-    r = random.uniform(23,24)
+    r = random.uniform(23+6,24+6)
     height = random.uniform(-0.5,0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
@@ -91,7 +91,7 @@ for i in range(0, 600):
 
 for i in range(0, 500):
     #random number between 17 and 22
-    r = random.uniform(24,26)
+    r = random.uniform(24+6,26+6)
     #random angle between 0 and 360
     height = random.uniform(-0.5,0.5)
     angle = random.uniform(0, 360)
@@ -103,7 +103,7 @@ for i in range(0, 500):
 
 for i in range(0, 500):
     #random number between 17 and 22
-    r = random.uniform(17,17.5)
+    r = random.uniform(17+6,17.5+6)
     height = random.uniform(-0.5,0.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)
@@ -116,7 +116,7 @@ for i in range(0, 500):
 #imperfections
 for i in range(0, 500):
     #random number between 17 and 22
-    r = random.uniform(16, 27)
+    r = random.uniform(16+6, 27+6)
     height = random.uniform(-1.5, 1.5)
     #random angle between 0 and 360
     angle = random.uniform(0, 360)

@@ -29,7 +29,8 @@ export class Satelite{
   
 
   createPlanet() {
-    const geometry = new THREE.SphereGeometry(this.radius, this.segments, this.segments);
+    console.log('moon')
+    const geometry = new THREE.SphereGeometry(10, this.segments, this.segments);
     const materialOptions = this.material
     const mesh = new THREE.Mesh(geometry, materialOptions);
     mesh.castShadow = this.castShadow; // Activer ou désactiver l'ombre en fonction du paramètre
@@ -58,9 +59,9 @@ export class Satelite{
     const yearDuration = this.calcul ? env.yearDuration * this.calcul : env.yearDuration;
     this.mesh.rotation.y = ((currentTime % yearDuration) / yearDuration) * 2 * Math.PI;
     // Mettez à jour les positions des planètes par rapport au soleil (en supposant une orbite circulaire)
-    this.mesh.position.x = this.planete.mesh.position.x + this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
-    this.mesh.position.z = this.planete.mesh.position.z +this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
-    
+    //this.mesh.position.x = this.planete.mesh.position.x + this.orbitRadius * Math.cos(this.mesh.rotation.y*this.sensRotation)+this.eccentricity;
+    //this.mesh.position.z = this.planete.mesh.position.z +this.orbitRadius * Math.sin(this.mesh.rotation.y*this.sensRotation)-this.eccentricity;
+    this.mesh.position.x = 
 
     this.orbit.position.x = this.planete.mesh.position.x;
     this.orbit.position.z = this.planete.mesh.position.z;
